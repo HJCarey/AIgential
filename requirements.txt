@@ -1,2 +1,4 @@
 autogen
+click
+psycopg2-binary
 python-dotenv
