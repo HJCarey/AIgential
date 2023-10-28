@@ -1,7 +1,10 @@
-# Code heavily inspired by IndyDevDan on youtube
-import os
-import dotenv
+def main():
+    # parse prompt param using click
 
-dotenv.load_dotenv()
+    # connect to db using with statement and create a db_manager
 
-print("Hello me")
+    pass
+
+
+if __name__ == "__main__":
+    main()
