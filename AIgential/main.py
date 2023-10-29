@@ -14,7 +14,6 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 def main():
     # parse prompt param using click
 
-    # connect to db using with statement and create a db_manager
     with PostgresDB() as db:
         db.connect_with_url(DB_URL)
         
@@ -22,15 +21,15 @@ def main():
 
         print("users_table", users_table)
 
-    # call db_manager.get_table_definition_for_prompt() to et tables in prompt ready form
+        # call db_manager.get_table_definition_for_prompt() to et tables in prompt ready form
 
-    # create two blank calls to llm.add_cap_ref() that update our curren tprompt passed in from cli
+        # create two blank calls to llm.add_cap_ref() that update our curren tprompt passed in from cli
 
-    # call llm.prompt to et a prompt_response variable
+        # call llm.prompt to et a prompt_response variable
 
-    # parse sql response from prompt_response using SQL_QUERY_DELIMITER '--------'
+        # parse sql response from prompt_response using SQL_QUERY_DELIMITER '--------'
 
-    # call db_manager.run_sql() with the parsed sql
+        # call db_manager.run_sql() with the parsed sql
 
     pass
 
