@@ -1,35 +1,50 @@
-import os
-import dotenv
-from AIgential.modules.db import PostgresDB
-from AIgential.modules import llm
-
-dotenv.load_dotenv()
-
-assert os.environ.get("DATABASE_URL"), "POSTGRES_CONNECTION_URL not found in .env file"
-assert os.environ.get("OPENAI_API_KEY"), "OPENAI_API_KEY not found in .env file"
-
-DB_URL = os.environ.get("DATABASE_URL")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-
+"""
+Entrypoint for the Autogen Experiments package.
+"""
+import logging
 import click
 
-@click.command()
-@click.argument('prompt')
-def main(prompt):
-    with PostgresDB() as db:
-        db.connect_with_url(DB_URL)
-        
-        table_definitions = db.get_table_definitions_for_prompt()
+from autogen_experiments import research_agent as ae_research_agent
 
-        prompt = llm.add_cap_ref(prompt, "Here are the table definitions:", "TABLE_DEFINITIONS", table_definitions)
-        prompt = llm.add_cap_ref(prompt, "Please provide a SQL query based on the table definitions.", "SQL_QUERY", "")
+##################
+# Research Agent #
+##################
+@click.group()
+def cli_research_agent():
+    """Research Agent"""
+    pass
 
-        prompt_response = llm.prompt(prompt)
+@cli_research_agent.command()
+@click.option(
+    "--task",
+    help="Task for the agent to research.",
+    type=str,
+    default="How does OPENAI work?",
+)
+def research_agent(task):
+    """Research Agent"""
+    logging.info("Running research_agent...")
 
-        sql_query = prompt_response.split('--------')[1].strip()
+    ae_research_agent.research(
+        task
+    )
 
-        db.run_sql(sql_query)
+##################
+# CLI Collection #
+##################
+cli = click.CommandCollection(
+    sources=[
+        cli_research_agent,
+    ]
+)
 
-
+##################
+# CLI Entrypoint #
+##################
 if __name__ == "__main__":
-    main()
+    logging.basicConfig(
+        format="[ %(asctime)s.%(msecs)03d - %(levelname)s - %(filename)s:%(lineno)d ] %(message)s",
+        level=logging.INFO,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    cli()
