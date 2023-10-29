@@ -11,27 +11,24 @@ assert os.environ.get("OPENAI_API_KEY"), "OPENAI_API_KEY not found in .env file"
 DB_URL = os.environ.get("DATABASE_URL")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
-def main():
-    # parse prompt param using click
+import click
 
+@click.command()
+@click.argument('prompt')
+def main(prompt):
     with PostgresDB() as db:
         db.connect_with_url(DB_URL)
         
-        users_table = db.get_all("playing_with_neon")
+        table_definitions = db.get_table_definitions_for_prompt()
 
-        print("users_table", users_table)
+        prompt = llm.add_cap_ref(prompt, "Here are the table definitions:", "TABLE_DEFINITIONS", table_definitions)
+        prompt = llm.add_cap_ref(prompt, "Please provide a SQL query based on the table definitions.", "SQL_QUERY", "")
 
-        # call db_manager.get_table_definition_for_prompt() to et tables in prompt ready form
+        prompt_response = llm.prompt(prompt)
 
-        # create two blank calls to llm.add_cap_ref() that update our curren tprompt passed in from cli
+        sql_query = prompt_response.split('--------')[1].strip()
 
-        # call llm.prompt to et a prompt_response variable
-
-        # parse sql response from prompt_response using SQL_QUERY_DELIMITER '--------'
-
-        # call db_manager.run_sql() with the parsed sql
-
-    pass
+        db.run_sql(sql_query)
 
 
 if __name__ == "__main__":
