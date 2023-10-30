@@ -4,37 +4,39 @@ Entrypoint for the Autogen Experiments package.
 import logging
 import click
 
-from autogen_experiments import research_agent as ae_research_agent
+from AIgential import postgres_agent as ai_postgres_agent
 
 ##################
-# Research Agent #
+# Postgres Agent #
 ##################
 @click.group()
-def cli_research_agent():
-    """Research Agent"""
+def cli_postgres_agent():
+    """Postgres Agent"""
     pass
 
-@cli_research_agent.command()
+@cli_postgres_agent.command()
 @click.option(
-    "--task",
-    help="Task for the agent to research.",
+    "--prompt",
+    help="Prompt for the Postgres agent to do.",
     type=str,
-    default="How does OPENAI work?",
+    default="Give me the first 10 users in alphabetical order.",
 )
-def research_agent(task):
-    """Research Agent"""
-    logging.info("Running research_agent...")
+def postgres_agent(prompt):
+    """Postgres Agent"""
+    logging.info("Running postgres_agent...")
 
-    ae_research_agent.research(
-        task
-    )
+    args = {
+        "prompt": prompt,
+    }
+
+    ai_postgres_agent.main(args)
 
 ##################
 # CLI Collection #
 ##################
 cli = click.CommandCollection(
     sources=[
-        cli_research_agent,
+        cli_postgres_agent,
     ]
 )
 

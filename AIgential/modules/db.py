@@ -39,22 +39,25 @@ class PostgresDB:
 
     def run_sql(self, sql):
         self.cur.execute(sql)
-        self.conn.commit()
+        return self.cur.fetchall()
 
     def get_table_definitions(self, table_name):
         query = f"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{table_name}'"
         self.cur.execute(query)
         columns = self.cur.fetchall()
-        return f"CREATE TABLE {table_name} ({','.join([f'{col[0]} {col[1]}' for col in columns])});"
+        return_val = f"CREATE TABLE {table_name} ({','.join([f'{col[0]} {col[1]}' for col in columns])});"
+        return return_val
 
     def get_all_table_names(self):
         query = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'"
         self.cur.execute(query)
-        return [table[0] for table in self.cur.fetchall()]
+        return_val = [table[0] for table in self.cur.fetchall()]
+        return return_val
 
     def get_table_definitions_for_prompt(self):
         table_defs = [self.get_table_definitions(table_name) for table_name in self.get_all_table_names()]
-        return '\n'.join(table_defs)
+        return_val = '\n'.join(table_defs)
+        return return_val
 
     def close(self):
         if self.cur:
